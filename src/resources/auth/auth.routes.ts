@@ -1,6 +1,6 @@
 import { Router } from 'express'
 
-import { signIn } from './auth.controller'
+import { checkUserInfo, CrudUser, signIn } from './auth.controller'
 var passport = require('passport');
 
 
@@ -11,6 +11,10 @@ routes
     .route('/signin')
     .post(passport.authenticate('local'), signIn)
 
+routes
+    .route('/register')
+    .post(checkUserInfo, CrudUser.createOne)
 
-    export default routes
+
+export default routes
 

@@ -30,6 +30,15 @@ const userSchema = new mongoose.Schema<BodyData>(
       email: {
           type:String,
           required:true
+      },
+      resettoken: {
+          type:String,
+          required:true  
+      },
+      active_status :{
+          type:Boolean,
+          required:true,
+          default:FALSE          
       }
     },
     { timestamps: true }

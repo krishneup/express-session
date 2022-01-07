@@ -17,7 +17,7 @@ var LocalStrategy = require('passport-local').Strategy;
 const MongoStore = require('connect-mongo');
 
 import authRouter from './resources/auth/auth.routes'
-
+import userRouter from './resources/user/user.router'
 
 
 
@@ -60,25 +60,19 @@ passport.use(new LocalStrategy(
   }
 ));
 
-/**
- * This function is used in conjunction with the `passport.authenticate()` method.  See comments in
- * `passport.use()` above ^^ for explanation
- */
- passport.serializeUser(function(user: { id: any; }, cb: (arg0: null, arg1: any) => void) {
-  cb(null, user.id);
+
+
+passport.serializeUser(function(user: { id: any; }, done: (arg0: null, arg1: any) => void) {
+  done(null, user.id);
 });
 
-/**
-* This function is used in conjunction with the `app.use(passport.session())` middleware defined below.
-* Scroll down and read the comments in the PASSPORT AUTHENTICATION section to learn how this works.
-* 
-* In summary, this method is "set" on the passport object and is passed the user ID stored in the `req.session.passport`
-* object later on.
-*/
-passport.deserializeUser(function(id: any, cb: any) {
-  User.findById(id, function (err: any, user: any) {
-      if (err) { return cb(err); }
-      cb(null, user);
+passport.deserializeUser(function(id: any, done: (arg0: any, arg1: any) => void) {
+  User.findById(id, function(err: any, user: any) {
+    const newuserData = {
+      id:user.id,
+      email:user.email
+    }
+    done(err, newuserData);
   });
 });
 
@@ -104,6 +98,9 @@ app.use(passport.session());
 
 
 app.use('/auth', authRouter);
+
+app.use('/user', userRouter);
+
 
 
 const start = async () => {
