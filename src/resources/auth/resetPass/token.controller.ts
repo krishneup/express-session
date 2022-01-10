@@ -4,18 +4,29 @@ import { token } from "./token.model";
 
 
 
-interface localsExtend extends Request{
-    locals:any;
-}
+// interface localsExtend extends Request{
+//     locals:any;
+// }
 
 
 
-export const sendResetLink = async(req:localsExtend,res:Response,next:NextFunction) => {
+export const sendResetLink = async(req:any,res:Response,next:NextFunction) => {
 
 
-    const {userId, token} = req.locals;
 
-    
+    try{
+
+        const {userId, token} = req.locals;
+
+        console.log(`http://localhost:5000/resetmypassword/?uiid=${userId+token}`)
+
+        res.status(403).send({message:"success"})
+
+    }catch(e){
+
+        res.status(403).end({message:"failed"})
+    }
+
 }
 
 
@@ -48,7 +59,7 @@ export const getUserId = async(req:Request,res:Response,next:NextFunction) => {
 
 
 
-export const generateAndSaveToken = async(req:localsExtend,res:Response,next:NextFunction) => {
+export const generateAndSaveToken = async(req:any,res:Response,next:NextFunction) => {
 
 
     try{
@@ -63,6 +74,9 @@ export const generateAndSaveToken = async(req:localsExtend,res:Response,next:Nex
         })
 
         req.locals = newToken;
+
+        // console.log(req.locals)
+        next()
        
     } catch(e){
         res.status(403).end({message:"token generation or saving error occured"})
