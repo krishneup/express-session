@@ -2,12 +2,20 @@ import { Request, Response, NextFunction } from 'express';
 import { User } from "../../user/user.model";
 import { token } from "./token.model";
 
-export const sendResetLink = async(req:Request,res:Response,next:NextFunction) => {
 
 
-    const {emailAddress, userId} = req.body;
+interface localsExtend extends Request{
+    locals:any;
+}
 
 
+
+export const sendResetLink = async(req:localsExtend,res:Response,next:NextFunction) => {
+
+
+    const {userId, token} = req.locals;
+
+    
 }
 
 
@@ -39,7 +47,8 @@ export const getUserId = async(req:Request,res:Response,next:NextFunction) => {
 }
 
 
-export const generateAndSaveToken = async(req:Request,res:Response,next:NextFunction) => {
+
+export const generateAndSaveToken = async(req:localsExtend,res:Response,next:NextFunction) => {
 
 
     try{
@@ -52,7 +61,9 @@ export const generateAndSaveToken = async(req:Request,res:Response,next:NextFunc
             userId:userId,
             token:generateToken
         })
-        console.log(newToken)
+
+        req.locals = newToken;
+       
     } catch(e){
         res.status(403).end({message:"token generation or saving error occured"})
     }
