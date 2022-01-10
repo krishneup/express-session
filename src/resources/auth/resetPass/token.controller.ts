@@ -12,22 +12,41 @@ const bcrypt = require('bcrypt');
 export const updatePassNow = async(req:any,res:Response,next:NextFunction) => {
     const {userId, token} = req.params
     const newPassword = req.body.password;
-    
-    await Token.findOne({token:token}).then((token: any)=>{
 
-        if(!token){
-           
-            res.status(403).json({message:"Token Probably expired or doesnt exist"})
-        }
 
-        User.findOneAndUpdate({id:userId},{password:newPassword},{new: true}, (err: any,doc: any) => {
-            if(err){
-                console.log(err)
+    // console.log(token)
+
+   let findToken=  await Token.findOne({token:token});
+
+    if(findToken){
+        // User.findByIdAndUpdate({_id:userId},{password:newPassword}, (err: any,user: any) => {
+        //     if(err){
+        //         console.log(err)
+        //     }
+        //     user.save(function (err: any, user: any) {
+        //         if (err) {
+        //           res.send("Error: ");
+        //         } else {
+        //           res.send("password updated successfully!");
+        //         }
+        //       })
+        // })
+
+        User.findByIdAndUpdate(req.user.id, req.body, function (err:any, user:any) {
+            if (err) {
+              return next(err);
+            } else {
+              user.password = newPassword;
+              user.save(function (err:any, user:any) {
+                if (err) {
+                  res.send("Error: ");
+                } else {
+                  res.send("password updated successfully!");
+                }
+              })
             }
-            console.log("successfully updated")
-        })
-        
-    })
+          });
+    }
     
 }
 
