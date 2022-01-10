@@ -18,7 +18,7 @@ const MongoStore = require('connect-mongo');
 
 import authRouter from './resources/auth/auth.routes'
 import userRouter from './resources/user/user.router'
-
+import resetPassRouter from './resources/auth/resetPass/token.router'
 
 
 var app:any = express();
@@ -98,6 +98,10 @@ app.use(passport.session());
 
 
 app.use('/auth', authRouter);
+
+
+app.use('/auth', resetPassRouter);
+
 
 app.use('/user', userRouter);
 

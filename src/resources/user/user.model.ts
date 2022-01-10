@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema<BodyData>(
       active_status :{
           type:Boolean,
           required:true,
-          default:FALSE          
+          default:false          
       }
     },
     { timestamps: true }
