@@ -20,4 +20,4 @@ const tokenSchema = new Schema<TokenTypes>({
     }
 });
 
-export const token:any = mongoose.model("token", tokenSchema);
+export const Token:any = mongoose.model("token", tokenSchema);

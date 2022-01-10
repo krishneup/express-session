@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { User } from "../../user/user.model";
-import { token } from "./token.model";
+import { Token } from "./token.model";
+const bcrypt = require('bcrypt');
 
 
 
@@ -8,7 +9,27 @@ import { token } from "./token.model";
 //     locals:any;
 // }
 
+export const updatePassNow = async(req:any,res:Response,next:NextFunction) => {
+    const {userId, token} = req.params
+    const newPassword = req.body.password;
+    
+    await Token.findOne({token:token}).then((token: any)=>{
 
+        if(!token){
+           
+            res.status(403).json({message:"Token Probably expired or doesnt exist"})
+        }
+
+        User.findOneAndUpdate({id:userId},{password:newPassword},{new: true}, (err: any,doc: any) => {
+            if(err){
+                console.log(err)
+            }
+            console.log("successfully updated")
+        })
+        
+    })
+    
+}
 
 export const sendResetLink = async(req:any,res:Response,next:NextFunction) => {
 
@@ -18,11 +39,12 @@ export const sendResetLink = async(req:any,res:Response,next:NextFunction) => {
 
         const {userId, token} = req.locals;
 
-        console.log(`http://localhost:5000/resetmypassword/?uiid=${userId+token}`)
+        console.log(userId)
+        console.log(token)
 
-        res.status(403).send({message:"success"})
+        res.status(201).send({message:"success"})
 
-    }catch(e){
+    } catch(e){
 
         res.status(403).end({message:"failed"})
     }
@@ -68,7 +90,7 @@ export const generateAndSaveToken = async(req:any,res:Response,next:NextFunction
 
         const generateToken = await Math.random().toString(36).slice(-8);
         
-        let newToken =  await token.create({
+        let newToken =  await Token.create({
             userId:userId,
             token:generateToken
         })
