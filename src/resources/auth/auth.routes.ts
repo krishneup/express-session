@@ -1,6 +1,6 @@
 import { Router } from 'express'
 
-import { checkUserInfo, CrudUser, signIn } from './auth.controller'
+import { checkUserInfo, CrudUser, signIn, enableAccount, registerAccount } from './auth.controller'
 var passport = require('passport');
 
 
@@ -13,7 +13,11 @@ routes
 
 routes
     .route('/register')
-    .post(checkUserInfo, CrudUser.createOne)
+    .post(checkUserInfo, registerAccount)
+
+routes
+    .route('/enableac')
+    .post(enableAccount)
 
 
 export default routes

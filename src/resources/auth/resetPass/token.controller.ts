@@ -67,7 +67,7 @@ export const getUserId = async (req: Request, res: Response, next: NextFunction)
     try {
         const emailAddress = req.body.email;
 
-        // // validate if the email address already exists
+        // validate if the email address already exists
         await User.findOne({ email: emailAddress }).then((user: any) => {
             if (!user) {
 

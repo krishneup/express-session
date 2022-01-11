@@ -13,7 +13,7 @@ interface BodyData {
 }
 
 interface BodyData {
-    resettoken:string,
+    acc_status:any,
     active_status: boolean
 }
 export {BodyData}

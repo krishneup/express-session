@@ -31,14 +31,17 @@ const userSchema = new mongoose.Schema<BodyData>(
           type:String,
           required:true
       },
-      resettoken: {
-          type:String,
-          required:false
-      },
-      active_status :{
-          type:Boolean,
-          required:true,
-          default:false          
+      acc_status :{
+         is_active :{
+            type:Boolean,
+            required:true,
+            default:false 
+         },
+         token:{
+            type:String,
+            required:true,
+            default:Math.random().toString(36).slice(-8) 
+         }        
       }
     },
     { timestamps: true }
