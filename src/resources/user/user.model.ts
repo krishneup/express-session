@@ -33,7 +33,7 @@ const userSchema = new mongoose.Schema<BodyData>(
       },
       resettoken: {
           type:String,
-          required:true  
+          required:false
       },
       active_status :{
           type:Boolean,

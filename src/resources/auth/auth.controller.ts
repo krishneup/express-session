@@ -16,7 +16,7 @@ export const signIn = async( req:Request,resp:any) => {
          email: req.body.email
      })
      
-     console.log(user_info.email)
+    //  console.log(user_info.email)
      if(user_info){
          var passwordIsValid = await bcrypt.compareSync(
              req.body.password,
@@ -31,7 +31,7 @@ export const signIn = async( req:Request,resp:any) => {
          });
      }
     
-     console.log(user_info)
+    //  console.log(user_info)
 
     await resp.status(200).send({
             id: user_info._id,
@@ -39,7 +39,7 @@ export const signIn = async( req:Request,resp:any) => {
             // accessToken: token,
         });
     } catch(e){
-        resp.status(403).send({ message: e })
+        resp.status(403).end({ message: e })
     }
  
 }

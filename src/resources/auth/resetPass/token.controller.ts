@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { User } from "../../user/user.model";
 import { Token } from "./token.model";
 const bcrypt = require('bcrypt');
-
+import { HashPass } from '../../../utils/helper';
 
 
 // interface localsExtend extends Request{
@@ -11,40 +11,22 @@ const bcrypt = require('bcrypt');
 
 export const updatePassNow = async(req:any,res:Response,next:NextFunction) => {
     const {userId, token} = req.params
-    const newPassword = req.body.password;
+    const newPassword = await HashPass(req.body.password);
 
 
-    // console.log(token)
 
    let findToken=  await Token.findOne({token:token});
 
-    if(findToken){
-        // User.findByIdAndUpdate({_id:userId},{password:newPassword}, (err: any,user: any) => {
-        //     if(err){
-        //         console.log(err)
-        //     }
-        //     user.save(function (err: any, user: any) {
-        //         if (err) {
-        //           res.send("Error: ");
-        //         } else {
-        //           res.send("password updated successfully!");
-        //         }
-        //       })
-        // })
+   console.log(findToken)
 
-        User.findByIdAndUpdate(req.user.id, req.body, function (err:any, user:any) {
+    if(findToken){
+
+        User.findByIdAndUpdate({_id:userId}, {password:newPassword}, function (err:any, user:any) {
             if (err) {
               return next(err);
-            } else {
-              user.password = newPassword;
-              user.save(function (err:any, user:any) {
-                if (err) {
-                  res.send("Error: ");
-                } else {
-                  res.send("password updated successfully!");
-                }
-              })
             }
+            console.log("success")
+            console.log(user)
           });
     }
     
@@ -85,6 +67,7 @@ export const getUserId = async(req:Request,res:Response,next:NextFunction) => {
             }
 
             req.body.userId= user.id;
+            // console.log(user)
              next()
 
             

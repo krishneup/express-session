@@ -5,9 +5,9 @@ import {TokenTypes} from './token.types'
 
 const tokenSchema = new Schema<TokenTypes>({
     userId: {
-        type: Schema.Types.ObjectId,
-        required: true,
-        ref: "user",
+        type: String,
+        required: true
+        
     },
     token: {
         type: String,
