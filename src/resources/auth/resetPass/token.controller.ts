@@ -10,25 +10,52 @@ import { HashPass } from '../../../utils/helper';
 // }
 
 export const updatePassNow = async(req:any,res:Response,next:NextFunction) => {
-    const {userId, token} = req.params
-    const newPassword = await HashPass(req.body.password);
-
-
-
-   let findToken=  await Token.findOne({token:token});
-
-   console.log(findToken)
-
-    if(findToken){
-
-        User.findByIdAndUpdate({_id:userId}, {password:newPassword}, function (err:any, user:any) {
-            if (err) {
-              return next(err);
-            }
-            console.log("success")
-            console.log(user)
-          });
+ 
+    try {
+        const {userId, token} = req.params
+        const newPassword = await HashPass(req.body.password);
+    
+    
+    
+       let findToken=  await Token.findOne({token:token});
+    
+    //    console.log(findToken)
+    
+        if(!findToken)  res.status(401).end({message:"Token Already Used"})
+    
+        
+        if(findToken !== null) {
+            User.findByIdAndUpdate({_id:userId}, {password:newPassword}, function (err:any, user:any) {
+                if (err) {
+                  return next(err);
+                  res.status(401).end({message:"Failed"})
+                }
+                if(!err) {
+    
+    
+                    // delete token so it can't be used again
+                    
+    
+                    // send the rest api endpoint message
+                    res.status(201).send({message:"Success"})
+    
+                    //
+                    console.log("success")
+                }
+              });
+    
+    
+            //  Token.deleteOne({ token: findToken.token });
+        }
+        
     }
+
+    catch(e){
+        res.status(201).end({message:"failed"})
+
+    }
+
+    
     
 }
 
@@ -57,7 +84,7 @@ export const sendResetLink = async(req:any,res:Response,next:NextFunction) => {
 export const getUserId = async(req:Request,res:Response,next:NextFunction) => {
 
     try {
-        const emailAddress = req.body.emailaddress;
+        const emailAddress = req.body.email;
 
         // // validate if the email address already exists
         await User.findOne({email:emailAddress}).then((user: any)=>{
