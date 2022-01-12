@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import { BodyData } from './user.types';
+import { UserTypes } from './user.types';
 
 const bcrypt = require('bcrypt');
 
@@ -7,7 +7,7 @@ const SALT_WORK_FACTOR = 10;
 
 
 
-const userSchema = new mongoose.Schema<BodyData>(
+const userSchema = new mongoose.Schema<UserTypes>(
     {
       name: {
         type: String,

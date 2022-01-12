@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { crudControllers } from "../../utils/cruds";
 import { User } from "../user/user.model";
-import { BodyData } from "../user/user.types";
+import { UserTypes } from "../user/user.types";
 const bcrypt = require('bcrypt');
 
 
@@ -10,8 +10,9 @@ export const CrudUser = crudControllers(User)
 
 
 // signin 
-export const signIn = async (req: Request, resp: any) => {
+export const signIn = async (req: Request, resp: Response) => {
     try {
+
         const user_info = await User.findOne({
             email: req.body.email
         })
@@ -36,7 +37,6 @@ export const signIn = async (req: Request, resp: any) => {
         await resp.status(200).send({
             id: user_info._id,
             email: user_info.email
-            // accessToken: token,
         });
     } catch (e) {
         resp.status(403).end({ message: e })
@@ -49,7 +49,7 @@ export const signIn = async (req: Request, resp: any) => {
 // validate signup user data
 export const checkUserInfo = async (req: Request, res: Response, next: NextFunction) => {
 
-    const { password, email }: BodyData = req.body;
+    const { password, email }: UserTypes = req.body;
 
     if (!password) {
         await res.status(201).json("ERROR: password is empty")
@@ -82,7 +82,7 @@ export const checkUserInfo = async (req: Request, res: Response, next: NextFunct
 
 }
 
-export const enableAccount = async (req: any, res: any) => {
+export const enableAccount = async (req: Request, res: Response) => {
     try {
 
         const { token, email } = req.body;
@@ -109,11 +109,11 @@ export const enableAccount = async (req: any, res: any) => {
 }
 
 
-export const registerAccount = async (req: any, res: any) => {
+export const registerAccount = async (req: Request, res: Response) => {
 
     try {
 
-        const { password, email }: BodyData = req.body;
+        const { password, email }: UserTypes = req.body;
 
 
         const registerAc = await User.create({

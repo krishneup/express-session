@@ -7,7 +7,7 @@ import { HashPass } from '../../../utils/helper';
 
 
 
-export const updatePassNow = async (req: any, res: Response, next: NextFunction) => {
+export const updatePassNow = async (req: Request, res: Response, next: NextFunction) => {
 
     try {
         const { userId, token } = req.params
@@ -42,13 +42,13 @@ export const updatePassNow = async (req: any, res: Response, next: NextFunction)
 
 }
 
-export const sendResetLink = async (req: any, res: Response, next: NextFunction) => {
+export const sendResetLink = async (req: ReqDataCustom, res: Response, next: NextFunction) => {
 
 
 
     try {
 
-        const { userId, token } = req.locals;
+        const { userId, token } = req.userDatas;
 
 
         res.status(201).send({ message: "success" })
@@ -88,9 +88,11 @@ export const getUserId = async (req: Request, res: Response, next: NextFunction)
 
 }
 
+interface ReqDataCustom extends Request {
+    userDatas?:any;
+}
 
-
-export const generateAndSaveToken = async (req: any, res: Response, next: NextFunction) => {
+export const generateAndSaveToken = async (req: ReqDataCustom, res: Response, next: NextFunction) => {
 
 
     try {
@@ -104,7 +106,8 @@ export const generateAndSaveToken = async (req: any, res: Response, next: NextFu
             token: generateToken
         })
 
-        req.locals = newToken;
+        // res.locals.userInfo = newToken;
+        req.userDatas = newToken
 
         next()
 

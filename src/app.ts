@@ -1,5 +1,4 @@
 import express, { Request, Response, NextFunction } from 'express';
-// import { connection } from 'mongoose';
 import { User } from './resources/user/user.model';
 import config from './utils/config';
 const cors = require('cors');
@@ -21,7 +20,7 @@ import userRouter from './resources/user/user.router'
 import resetPassRouter from './resources/auth/resetPass/token.router'
 
 
-var app:any = express();
+var app: express.Application = express();
 
 
 var helmet = require('helmet')
@@ -77,7 +76,6 @@ passport.deserializeUser(function(id: any, done: (arg0: any, arg1: any) => void)
 });
 
 
-// const sessionStore = new MongoStore({ mongoUrl: 'mongodb://localhost:27017/mytest', collectionName:'sessions'	 })
 const sessionStore = new MongoStore({ mongoUrl: 'mongodb://localhost:27017/mytest', collectionName:'sessions'	 })
 
 
