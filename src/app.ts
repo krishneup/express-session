@@ -1,113 +1,64 @@
-import express, { Request, Response, NextFunction } from 'express';
-import { User } from './resources/user/user.model';
+import express from 'express';
 import config from './utils/config';
-const cors = require('cors');
-var createError = require('http-errors');
+import { connect } from './utils/db';
+
+
+// EXPRESS JS Basic Stuffs
+var app: express.Application = express();
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-import { connect } from './utils/db';
-const mongoose = require('mongoose');
-
-// auth related imports
-const session = require('express-session');
-var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
-const MongoStore = require('connect-mongo');
-
-import authRouter from './resources/auth/auth.routes'
-import userRouter from './resources/user/user.router'
-import resetPassRouter from './resources/auth/resetPass/token.router'
-
-
-var app: express.Application = express();
-
-
-var helmet = require('helmet')
-app.use(helmet())
-
-
-app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// security related stuffs below
+var helmet = require('helmet')
+app.use(helmet())
+
+// cors related
+const cors = require('cors');
+const corsOptions = require('./utils/cors')
+app.use(cors(corsOptions));
+
+// redis related imports
+// require('./utils/redis')
+
+const RedisMisc = require('./utils/redis');
 
 
-
-passport.use(new LocalStrategy(
-  {
-    usernameField: 'email',
-    passwordField: 'password'
-},
-
-  function(email:any, password:any, done:any) {
-
-    // console.log("email")
-    User.findOne({ email: email }, function (err: any, user: { verifyPassword: (arg0: any) => any; }) {
-      
-      // console.log(user)
-
-      if (err) { return done(err); }
-      if (!user) { return done(null, false); }
-      // if (!user.verifyPassword(password)) { return done(null, false); }
-
-      return done(null, user);
-    });
-  }
-));
+// EXPRESS-SESSION
+const session = require('express-session');
+app.use(session(RedisMisc.sessionData));
 
 
-
-passport.serializeUser(function(user: { id: any; }, done: (arg0: null, arg1: any) => void) {
-  done(null, user.id);
-});
-
-passport.deserializeUser(function(id: any, done: (arg0: any, arg1: any) => void) {
-  User.findById(id, function(err: any, user: any) {
-    const newuserData = {
-      id:user.id,
-      email:user.email
-    }
-    done(err, newuserData);
-  });
-});
-
-
-const sessionStore = new MongoStore({ mongoUrl: 'mongodb://localhost:27017/mytest', collectionName:'sessions'	 })
-
-
-app.use(session({
-  //secret: process.env.SECRET,
-  secret: 'some secret',
-  resave: false,
-  saveUninitialized: true,
-  store: sessionStore,
-  cookie: {
-      maxAge: 1000 * 60 * 60 * 24 // Equals 1 day (1 day * 24 hr/1 day * 60 min/1 hr * 60 sec/1 min * 1000 ms / 1 sec)
-  }
-}));
-
+// PASSPORT JS
+var passport = require('passport');
+require('./utils/passport')
 
 app.use(passport.initialize());
 app.use(passport.session());
 
 
-app.use('/auth', authRouter);
-
-
-app.use('/auth', resetPassRouter);
-
-
+// ROUTES
+//user routes
+import userRouter from './resources/user/user.router';
 app.use('/user', userRouter);
 
+//auth related routes
+import authRouter from './resources/auth/auth.routes';
+app.use('/auth', authRouter);
+
+import resetPassRouter from './resources/auth/resetPass/token.router';
+app.use('/auth', resetPassRouter);
 
 
 const start = async () => {
   try {
     await connect()
+    
     app.listen(config.port, () => {
      console.log(`working on port ${config.port}`)
     })

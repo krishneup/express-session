@@ -19,19 +19,35 @@ const SALT_WORK_FACTOR = 10;
 const userSchema = new mongoose_1.default.Schema({
     name: {
         type: String,
-        required: true,
+        // required: true,
         trim: true,
         maxlength: 50
     },
     role: {
         type: String,
-        required: true,
+        // required: true,
         trim: true,
         maxlength: 50
     },
     password: {
         type: String,
         required: true
+    },
+    email: {
+        type: String,
+        required: true
+    },
+    acc_status: {
+        is_active: {
+            type: Boolean,
+            required: true,
+            default: false
+        },
+        token: {
+            type: String,
+            required: true,
+            default: Math.random().toString(36).slice(-8)
+        }
     }
 }, { timestamps: true });
 userSchema.pre('save', function (next) {

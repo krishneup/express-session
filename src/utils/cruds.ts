@@ -5,8 +5,12 @@ import { Request, Response, NextFunction } from 'express';
 export const getOne = (model:any) => async (req: Request, res: Response) => {
 
     try {
+      // console.log(req.user)
       const doc = await model
         .findById({ _id: req.params.id })
+        .cache({
+          key:req.params.id
+        })
         .lean()
         .exec()
   

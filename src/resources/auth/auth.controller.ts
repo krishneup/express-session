@@ -9,34 +9,25 @@ const bcrypt = require('bcrypt');
 export const CrudUser = crudControllers(User)
 
 
+// validate password
+// returns True/false
+export const validatePassword = (dbPassword:String, clientProvidedPassword:String) => {
+    return bcrypt.compareSync(
+        clientProvidedPassword,
+        dbPassword
+    )
+}
+
+
 // signin 
-export const signIn = async (req: Request, resp: Response) => {
+export const signIn = async (req: any, resp: Response) => {
     try {
 
-        const user_info = await User.findOne({
-            email: req.body.email
-        })
-
-        //  console.log(user_info.email)
-        if (user_info) {
-            var passwordIsValid = await bcrypt.compareSync(
-                req.body.password,
-                user_info.password
-            );
-        }
-
-        if (!passwordIsValid) {
-            resp.status(401).send({
-                accessToken: null,
-                message: "Invalid Password!"
-            });
-        }
-
-        //  console.log(user_info)
+        
 
         await resp.status(200).send({
-            id: user_info._id,
-            email: user_info.email
+            id: req.user
+            
         });
     } catch (e) {
         resp.status(403).end({ message: e })
